@@ -1,0 +1,19 @@
+## Interface: 80000
+
+## Title: SimpleMacroBindings
+## Notes: A simple addon for creating and binding macros
+## Notes-deDE: Ein einfaches Addon zum Erstellen von tastengebundenen Makros
+## Author: Noexli
+## Version: @project-version@
+
+## X-Website: https://github.com/noexli/SimpleMacroBindings
+
+## OptionalDeps: Ace3, LibDualSpec-1.0
+## SavedVariables: SimpleMB_DB
+
+SimpleMacroBindings.xml
+
+Localization\enUS.lua
+Localization\deDE.lua
+
+SimpleMacroBindings.lua
