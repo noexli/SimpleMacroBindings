@@ -13,7 +13,7 @@
 
 SimpleMacroBindings.xml
 
-Localization\enUS.lua
-Localization\deDE.lua
+Locales\enUS.lua
+Locales\deDE.lua
 
 SimpleMacroBindings.lua
