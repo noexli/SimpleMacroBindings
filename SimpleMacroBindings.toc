@@ -11,7 +11,7 @@
 ## OptionalDeps: Ace3, LibDualSpec-1.0
 ## SavedVariables: SimpleMB_DB
 
-SimpleMacroBindings.xml
+embeds.xml
 
 Locales\enUS.lua
 Locales\deDE.lua
