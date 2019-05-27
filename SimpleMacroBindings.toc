@@ -12,8 +12,6 @@
 ## SavedVariables: SimpleMB_DB
 
 embeds.xml
-
-Locales\enUS.lua
-Locales\deDE.lua
+locales.xml
 
 SimpleMacroBindings.lua

@@ -39,27 +39,6 @@ local options = {
                     order = 30,
                 },
 
-                --[[
-                    macroBinding = {
-                        name = L['Macro Binding'],
-                        desc = L['Binds the macro to a keybinding.'],
-                        type = 'keybinding',
-                        set = 'SetMacroBinding',
-                        get = 'GetMacroBinding',
-                        order = 31,
-                    },
-
-                    macroKeyDown = {
-                        name = L['Key Down'],
-                        type = 'toggle',
-                        desc = L['Execute macro when key is pressed down. Default behavior is to execute on key release.'],
-                        tristate = true,
-                        set = 'SetMacroKeyDown',
-                        get = 'GetMacroKeyDown',
-                        order = 32,
-                    },
-                ]]
-
                 macroGenerate = {
                     name = L['Generate Macro'],
                     type = 'toggle',
@@ -146,31 +125,8 @@ local defaults = {
 
 local macroList = {}
 
-local function getButton(index)
-    local button
-
-    if (_G["SimpleMB_Button" .. index]) then
-        button = _G["SimpleMB_Button" .. index]
-    else
-        button = CreateFrame("CheckButton", "SimpleMB_Button" .. index, UIParent, "SecureActionButtonTemplate")
-    end
-
-    return button
-end
-
-local function deleteButton(index)
-    local button = getButton(index)
-
-    if button then
-        button:SetAttribute("type", nil)
-        button:SetAttribute("macrotext", nil)
-        ClearOverrideBindings(button)
-        return true
-    end
-
-    return false
-end
-
+--- Event: OnInitialize
+-- Called when the addon is initialized
 function SimpleMB:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("SimpleMB_DB", defaults, true)
     options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
@@ -208,27 +164,35 @@ function SimpleMB:OnInitialize()
     self:UpdateMacroList()
 end
 
+--- Callback: OnEnable
+-- Called when the addon is enabled
 function SimpleMB:OnEnable()
-    -- Called when the addon is enabled
-    self:RefreshBindings()
+
 end
 
+--- Callback: OnEnable
+-- Called when the addon is disabled
 function SimpleMB:OnDisable()
-    -- Called when the addon is disabled
-    self:ClearButtons()
+
 end
 
+--- Callback: OnPlayerLogin
+-- Called when the player login in
 function SimpleMB:OnPlayerLogin()
-    -- this space for rent
-    self:RefreshBindings()
+
 end
 
+--- Callback: OnPlayerEnterCombat
+-- Called when the player is entered combat
 function SimpleMB:OnPlayerEnterCombat()
     self.inCombat = true
 end
 
+--- Callback: OnPlayerLeaveCombat
+-- Called when the player is leaved combat
 function SimpleMB:OnPlayerLeaveCombat()
     self.inCombat = false
+
     if self.delayedMacroUpdate == true then
         self:UpdateAll()
         self.delayedMacroUpdate = false
@@ -236,7 +200,8 @@ function SimpleMB:OnPlayerLeaveCombat()
 end
 
 
--- Chat command handling
+--- Service: ChatCommand
+-- For chat commands handling
 function SimpleMB:ChatCommand(input)
     if not input or input:trim() == "" then
         InterfaceOptionsFrame_OpenToCategory("SimpleMB")
@@ -248,6 +213,8 @@ function SimpleMB:ChatCommand(input)
     end
 end
 
+--- Service: UpdateAll
+-- Updates all macros
 function SimpleMB:UpdateAll()
     self:UpdateDisplayedMacro()
 end
@@ -268,10 +235,10 @@ function SimpleMB:SetNewMacro(info, name)
         self.db.profile.macroTable[name] = {
             body = "",
             bindings = {},
-            keyDown = true,
             generate = false,
             idName = ""
         }
+
         self:UpdateMacroList()
     end
 
@@ -305,12 +272,16 @@ function SimpleMB:SetMacroName(info, name)
     -- Grabs the macro text stored under the old name and stores it under the new name
     local body = self.db.profile.macroTable[self.selectedMacroName].body
     local bindings = self.db.profile.macroTable[self.selectedMacroName].bindings
+    local generate = self.db.profile.macroTable[self.selectedMacroName].generate
+    local idName = self.db.profile.macroTable[self.selectedMacroName].idName
+
     self.db.profile.macroTable[name] = {}
     self.db.profile.macroTable[name].body = body
     self.db.profile.macroTable[name].bindings = bindings
+    self.db.profile.macroTable[name].generate = generate
+    self.db.profile.macroTable[name].idName = idName
 
     -- Erases the old name and sets the new name as the selection
-    deleteButton(self.selectedMacroName)
     self.db.profile.macroTable[self.selectedMacroName] = nil
 
     self.selectedMacroName = name
@@ -337,36 +308,6 @@ function SimpleMB:SetMacroBody(info, body)
     end
 end
 
-function SimpleMB:GetMacroBinding(info)
-    if not self.selectedMacroName then return end
-
-    local string = ""
-    local bindings = self.db.profile.macroTable[self.selectedMacroName].bindings
-    if #bindings > 0 then
-        for _, key in ipairs(bindings) do
-            string = string .. " " .. key
-        end
-    end
-
-    return string
-end
-
-function SimpleMB:SetMacroBinding(info, key)
-    local name = self.selectedMacroName
-    if name == "" then return end
-
-    if key == "" then
-        self.db.profile.macroTable[name].bindings = {}
-    else
-        for _, binding in ipairs(self.db.profile.macroTable[name].bindings) do
-            if key == binding then return end
-        end
-        table.insert(self.db.profile.macroTable[name].bindings, key)
-    end
-
-    self:BindMacro(name, self.db.profile.macroTable[name].bindings)
-end
-
 function SimpleMB:GetMacroDelete(info)
     return nil
 end
@@ -374,8 +315,6 @@ end
 function SimpleMB:SetMacroDelete(info, key)
     local name = options.args.main.args.macroDeleteBox.values[key]
     self.db.profile.macroTable[name] = nil
-
-    deleteButton(name)
 
     self:UpdateMacroList()
     self:UpdateDisplayedMacro()
@@ -396,40 +335,6 @@ function SimpleMB:SetMacroCopy(info, key)
     self.db.profile.macroTable[self.selectedMacroName].body = body
     self.selectedMacroBody = body
     self:UpdateDisplayedMacro()
-end
-
-function SimpleMB:GetMacroKeyDown(info)
-    -- default value
-    if not self.selectedMacroName then
-        return false
-    end
-
-    local value = self.db.profile.macroTable[self.selectedMacroName].keyDown
-
-    -- Check for existence of keydown parameter
-    if value == nil then
-        value = false
-
-    -- Check for third check box state and return a true nil
-    elseif value == "both" then
-        value = nil
-
-    -- else return the value as is
-    end
-
-    return value
-end
-
-function SimpleMB:SetMacroKeyDown(info, value)
-    local name = self.selectedMacroName
-    if name == "" or name == nil then return end
-
-    if value == nil then
-        value = "both"
-    end
-
-    self.db.profile.macroTable[name].keyDown = value
-    self:RegisterForKeyPress(name)
 end
 
 function SimpleMB:GetMacroGenerate(info)
@@ -479,56 +384,6 @@ function SimpleMB:SetChatInfo(info, value)
 end
 
 
--- Macro Processing
-function SimpleMB:BindMacro(name, bindings)
-    local macro = self.db.profile.macroTable[name]
-    local button = getButton(name)
-
-    if #bindings == 0 then
-        ClearOverrideBindings(button)
-    else
-        button:SetAttribute("type", "macro")
-        button:SetAttribute("macrotext", self.db.profile.macroTable[name].body)
-        ClearOverrideBindings(button)
-
-        for _, key in ipairs(self.db.profile.macroTable[name].bindings) do
-            SetOverrideBindingClick(button, false, key, button:GetName())
-        end
-    end
-end
-
-function SimpleMB:RegisterForKeyPress(name)
-    local macro = self.db.profile.macroTable[name]
-    local button = getButton(name)
-
-    local keyDown = self.db.profile.macroTable[name].keyDown
-    local up = ""
-    local down = ""
-
-    -- Tristate
-    if keyDown == "both" then
-        up = "AnyUp"
-        down = "AnyDown"
-
-    -- Key down
-    elseif keyDown == true then
-        down = "AnyDown"
-
-    -- Default to key up
-    else
-        up = "AnyUp"
-    end
-
-    button:RegisterForClicks(up, down)
-end
-
-function SimpleMB:RefreshBindings()
-    for name, macro in pairs(self.db.profile.macroTable) do
-        self:BindMacro(name, macro.bindings)
-        self:RegisterForKeyPress(name)
-    end
-end
-
 function SimpleMB:GetMacroListKeyByName(name)
     local index = nil
 
@@ -544,6 +399,7 @@ end
 
 function SimpleMB:UpdateMacroList()
     wipe(macroList)
+
     for name, _ in pairs(self.db.profile.macroTable) do
         table.insert(macroList, name)
 
@@ -551,6 +407,7 @@ function SimpleMB:UpdateMacroList()
     end
 
     table.sort(macroList)
+
     options.args.main.args.macroSelectBox.values = macroList
     options.args.main.args.macroDeleteBox.values = macroList
     options.args.main.args.macroCopyBox.values = macroList
@@ -564,37 +421,52 @@ function SimpleMB:UpdateDisplayedMacro()
         self.selectedMacroBody = self.db.profile.macroTable[name].body
         options.args.main.args.macroName.disabled = false
         options.args.main.args.macroEditBox.disabled = false
-        --options.args.main.args.macroBinding.disabled = false
     else
         self.selectedMacroName = nil
         self.selectedMacroBody = nil
         options.args.main.args.macroName.disabled = true
         options.args.main.args.macroEditBox.disabled = true
-        --options.args.main.args.macroBinding.disabled = true
     end
-
-    self:RefreshBindings()
 end
 
+-- Macro Handling
 function SimpleMB:MacroGenerate(name)
     if self.db.profile.macroTable[name].generate and self.db.profile.macroTable[name].idName then
         local idName = "ZZ_SMB:" .. self.db.profile.macroTable[name].idName
 
         if GetMacroIndexByName(idName) > 0 then
-            EditMacro(idName, idName, "INV_Misc_QuestionMark", self.db.profile.macroTable[name].body)
-
-            if self:Debug() then
-                self:Print("Update Macro: " .. idName)
-            end
+            self:MacroUpdate(name, idName)
         else
-            CreateMacro(idName, "INV_Misc_QuestionMark", self.db.profile.macroTable[name].body, nil, nil)
-
-            if self:Debug() then
-                self:Print("Create Macro: " .. idName)
-            end
+            self:MacroCreate(name, idName)
         end
     end
 end
+
+function SimpleMB:MacroCreate(name, idName)
+    CreateMacro(idName, "INV_Misc_QuestionMark", self.db.profile.macroTable[name].body, nil, nil)
+
+    if self:Debug() then
+        self:Print("Create Macro: " .. idName)
+    end
+end
+
+function SimpleMB:MacroUpdate(name, idName)
+    EditMacro(idName, idName, "INV_Misc_QuestionMark", self.db.profile.macroTable[name].body)
+
+    if self:Debug() then
+        self:Print("Update Macro: " .. idName)
+    end
+end
+
+-- Helpers
+function SimpleMB:CleanMacroName(name)
+    return gsub(name, ":%s*", "-")
+end
+
+function SimpleMB:CleanMacroIdName(name)
+    return strupper(gsub(name, "%s+", "_"))
+end
+
 
 -- Refresh UI
 function SimpleMB:RefreshUI()
@@ -607,25 +479,9 @@ function SimpleMB:InitializePresets(db, profile)
 end
 
 function SimpleMB:RefreshConfig()
-    self:ClearButtons()
     self:UpdateMacroList()
     self:UpdateDisplayedMacro()
     self:RefreshUI()
-end
-
-function SimpleMB:ClearButtons()
-    for _, name in ipairs(macroList) do
-        deleteButton(name)
-    end
-end
-
--- Custom Helper Functions
-function SimpleMB:CleanMacroName(name)
-    return gsub(name, ":%s*", "-")
-end
-
-function SimpleMB:CleanMacroIdName(name)
-    return strupper(gsub(name, "%s+", "_"))
 end
 
 function SimpleMB:Debug()
