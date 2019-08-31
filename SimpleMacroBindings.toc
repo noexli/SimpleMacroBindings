@@ -11,7 +11,7 @@
 ## Notes: A simple addon for creating and binding macros
 ## Notes-deDE: Ein einfaches Addon zum Erstellen von tastengebundenen Makros
 
-## X-Website: https://github.com/noexli/SimpleMacroBindings
+## X-Website: https://www.curseforge.com/wow/addons/simplemacrobindings
 ## X-Curse-Project-ID: 339438
 ## X-GitHub: https://github.com/noexli/SimpleMacroBindings
 
