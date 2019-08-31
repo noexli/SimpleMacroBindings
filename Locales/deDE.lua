@@ -6,6 +6,7 @@ end
 
 L['Are you sure you wish to copy the selected macro?'] = 'Bist du dir sicher, dass du das ausgewählte Makro kopieren möchtest?'
 L['Are you sure you wish to delete the selected macro?'] = 'Bist du dir sicher, dass du das ausgewählte Makro löschen möchtest?'
+L['Chat message for macro generation.'] = "Chatnachrichten für Makro-Generierung."
 L['Chat messages'] = 'Chatnachrichten'
 L['Copy macro'] = 'Makro kopieren'
 L['Create a new empty macro'] = 'Erstelle ein neues Makro'

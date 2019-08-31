@@ -6,6 +6,7 @@ end
 
 L['Are you sure you wish to copy the selected macro?'] = true
 L['Are you sure you wish to delete the selected macro?'] = true
+L['Chat message for macro generation.'] = true
 L['Chat messages'] = true
 L['Copy macro'] = true
 L['Create a new empty macro'] = true
