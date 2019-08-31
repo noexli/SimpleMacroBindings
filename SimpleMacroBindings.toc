@@ -1,19 +1,30 @@
-## Interface: 80000
+#@retail@
+## Interface: 80200
+#@end-retail@
+#@non-retail@
+# ## Interface: 11302
+#@end-non-retail@
 
 ## Title: SimpleMacroBindings
+## Author: Noexli (MasterThex)
+## Version: @project-version@
 ## Notes: A simple addon for creating and binding macros
 ## Notes-deDE: Ein einfaches Addon zum Erstellen von tastengebundenen Makros
-## Author: Noexli
-## Version: @project-version@
 
 ## X-Website: https://github.com/noexli/SimpleMacroBindings
+## X-Curse-Project-ID: 339438
+## X-GitHub: https://github.com/noexli/SimpleMacroBindings
 
+## DefaultState: Enabled
+#@retail@
 ## OptionalDeps: Ace3, LibDualSpec-1.0
+#@end-retail@
+#@non-retail@
+# ## OptionalDeps: Ace3
+#@end-non-retail@
 ## SavedVariables: SimpleMB_DB
 
 embeds.xml
-
-Locales\enUS.lua
-Locales\deDE.lua
+locales.xml
 
 SimpleMacroBindings.lua
