@@ -132,9 +132,11 @@ function SimpleMB:OnInitialize()
     options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
     LibStub("AceConfig-3.0"):RegisterOptionsTable("SimpleMB", options, nil)
 
+    --@retail@
     local LibDualSpec = LibStub('LibDualSpec-1.0')
     LibDualSpec:EnhanceDatabase(self.db, "SimpleMB_DB")
     LibDualSpec:EnhanceOptions(options.args.profile, self.db)
+    --@end-retail@
 
     self.inCombat = nil
     self.selectedMacro = nil
@@ -466,7 +468,6 @@ end
 function SimpleMB:CleanMacroIdName(name)
     return strupper(gsub(name, "%s+", "_"))
 end
-
 
 -- Refresh UI
 function SimpleMB:RefreshUI()

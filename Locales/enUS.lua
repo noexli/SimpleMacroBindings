@@ -4,7 +4,6 @@ if not L then
   return
 end
 
-L['|cffeda55fClick|r to open configuration menu'] = true
 L['Are you sure you wish to copy the selected macro?'] = true
 L['Are you sure you wish to delete the selected macro?'] = true
 L['Chat messages'] = true
